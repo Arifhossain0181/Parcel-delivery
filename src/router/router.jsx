@@ -2,7 +2,10 @@ import { createBrowserRouter } from "react-router-dom"; // make sure it's react-
 import Rootelayout from "../Layout/Rootelayout";
 import Home from "../Pages/Home/Home/Home";
 import Rider from "../Pages/Home/Rider/Rider";
-
+import About from "../Pages/Home/About/About";
+import AuthLayout from "../Layout/Authlayout/AuthLayout";
+import Login from "../Pages/Authentication/Login/Login";
+import REgister from "../Pages/Authentication/Register/REgister";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -16,6 +19,22 @@ export const router = createBrowserRouter([
         path: "Rider", // now accessible via "/Rider"
         Component: Rider,
       },
+      {
+        path:'about',
+        Component: About,
+
+      },
+       {
+    path:'register',
+    Component:REgister,
+  },
+  {
+      path:'login',
+      Component:Login,
+    },
+     
+     
     ],
   },
+ 
 ]);
