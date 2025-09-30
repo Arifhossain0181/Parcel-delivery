@@ -6,7 +6,7 @@ import Benefits from './Benefits/Benefits';
 import Bemarchnat from './Bemarchant/Bemarchnat';
 import Subcard from './Subcard/Subcard';
 import Customerreview from './Customerreview/Customerreview';
-import QUestion from './Question/QUestion';
+
 const Home = () => {
     return (
         <div>
@@ -17,7 +17,7 @@ const Home = () => {
          <Benefits></Benefits>
          <Bemarchnat></Bemarchnat>
          <Customerreview></Customerreview>
-         <QUestion></QUestion>
+        
             
         </div>
     );

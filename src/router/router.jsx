@@ -6,6 +6,7 @@ import About from "../Pages/Home/About/About";
 import AuthLayout from "../Layout/Authlayout/AuthLayout";
 import Login from "../Pages/Authentication/Login/Login";
 import REgister from "../Pages/Authentication/Register/REgister";
+import Coverage from "../Pages/Coverage/Coverage";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -32,7 +33,12 @@ export const router = createBrowserRouter([
       path:'login',
       Component:Login,
     },
-     
+    
+     {
+      path:'Coverage',
+      Component: Coverage,
+      loader:()=>fetch('../../public/servicesenter.json')
+     }
      
     ],
   },

@@ -1,11 +1,11 @@
 import React from 'react';
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import Parcelicon from '../Parcelicon/Parcelicon';
 const Navbar = () => {
     const linka =
         <>
         <li><NavLink to='/services'>Services</NavLink></li>
-        <li><NavLink to='/coverage'>Coverage</NavLink></li>
+  <li><NavLink to='/Coverage'>Coverage</NavLink></li>
         <li><NavLink to='/about'>Abouts</NavLink></li>
         <li><NavLink to='/Pricing'>Pricing</NavLink></li>
         <li><NavLink to='/Rider'>Be a Rider</NavLink></li>
@@ -25,7 +25,7 @@ const Navbar = () => {
          {linka}
       </ul>
     </div>
-    <a className="btn btn-ghost text-xl"><Parcelicon></Parcelicon></a>
+  <div className="btn btn-ghost text-xl"><Parcelicon /></div>
   </div>
   <div className="navbar-center hidden lg:flex">
     <ul className="menu menu-horizontal px-1">
@@ -33,7 +33,7 @@ const Navbar = () => {
     </ul>
   </div>
   <div className="navbar-end">
-    <a className="btn">Button</a>
+    <button className="btn">Button</button>
   </div>
 </div>
         </div>

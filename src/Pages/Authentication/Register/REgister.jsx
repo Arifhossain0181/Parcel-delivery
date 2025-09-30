@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import registerImage from "../../../assets/authImage.png"; // replaced missing register.png with authImage.png
-
+import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 const Register = () => {
+  const { createuser, user,} = UseAuthhooks(); // Placeholder for future auth integration
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,7 +16,6 @@ const Register = () => {
       [e.target.name]: e.target.value,
     });
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -24,8 +24,18 @@ const Register = () => {
       return;
     }
 
-    console.log("Registration Data:", formData);
-    // 👉 later integrate with backend / Firebase
+    // Call the auth create user method from your auth hook
+    createuser(formData.email, formData.password)
+      .then((result) => {
+        const createdUser = result.user;
+        console.log("User created:", createdUser);
+        // Optionally reset form or redirect
+        setFormData({ name: "", email: "", password: "", confirmPassword: "" });
+      })
+      .catch((error) => {
+        console.error("Registration error:", error);
+        alert(error.message || "Registration failed");
+      });
   };
 
   return (
@@ -103,7 +113,7 @@ const Register = () => {
             </div>
 
             {/* Submit */}
-            <button type="submit" className="btn bg-lime-400 hover:bg-lime-500 w-full">
+            <button  type="submit" className="btn bg-lime-400 hover:bg-lime-500 w-full">
               Register
             </button>
           </form>
