@@ -7,6 +7,8 @@ import AuthLayout from "../Layout/Authlayout/AuthLayout";
 import Login from "../Pages/Authentication/Login/Login";
 import REgister from "../Pages/Authentication/Register/REgister";
 import Coverage from "../Pages/Coverage/Coverage";
+import Privateroutes from "../../src/Routes/Privateroutes";
+import  SendParcel from "../Pages/SeendParcel/SendParcel";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -21,26 +23,27 @@ export const router = createBrowserRouter([
         Component: Rider,
       },
       {
-        path:'about',
+        path: "about",
         Component: About,
-
       },
-       {
-    path:'register',
-    Component:REgister,
-  },
-  {
-      path:'login',
-      Component:Login,
-    },
-    
-     {
-      path:'Coverage',
-      Component: Coverage,
-      loader:()=>fetch('../../public/servicesenter.json')
-     }
-     
+      {
+        path: "register",
+        Component: REgister,
+      },
+      {
+        path: "login",
+        Component: Login,
+      },
+
+      {
+        path: "Coverage",
+        Component: Coverage,
+        loader: () => fetch("../../public/servicesenter.json"),
+      },
+      {
+        path: "sendPercel",
+        element: <Privateroutes> < SendParcel></ SendParcel></Privateroutes>,
+      },
     ],
   },
- 
 ]);

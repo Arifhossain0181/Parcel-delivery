@@ -1,11 +1,13 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import Parcelicon from '../Parcelicon/Parcelicon';
+import { Link } from 'react-router';
 const Navbar = () => {
     const linka =
         <>
         <li><NavLink to='/services'>Services</NavLink></li>
   <li><NavLink to='/Coverage'>Coverage</NavLink></li>
+  <li><NavLink to='/sendPercel'>Send A Parcel</NavLink></li>
         <li><NavLink to='/about'>Abouts</NavLink></li>
         <li><NavLink to='/Pricing'>Pricing</NavLink></li>
         <li><NavLink to='/Rider'>Be a Rider</NavLink></li>
@@ -33,7 +35,7 @@ const Navbar = () => {
     </ul>
   </div>
   <div className="navbar-end">
-    <button className="btn">Button</button>
+   <Link className='btn btn-outline font-bold' to='/login'>Login</Link>
   </div>
 </div>
         </div>
