@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import serviceCenters from "../../../public/servicesenter.json";
-import UseAuthhooks from "../../hooks/UseAuthhooks"; // 
+import UseAuthhooks from "../../Hooks/UseAuthHooks"; //
+import UseAxiosSecure from "../../Hooks/UseAxiosSecure"; // secure axios instance 
 const ParcelForm = () => {
   const { user } =UseAuthhooks(); // logged in user info (email)
   const {
@@ -12,7 +13,8 @@ const ParcelForm = () => {
     watch,
     formState: { errors },
   } = useForm();
-
+   const { axiossecure } = UseAxiosSecure(); // secure axios instance
+  // state
   const [cost, setCost] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [trackingId, setTrackingId] = useState(null);
@@ -53,7 +55,7 @@ const ParcelForm = () => {
       }
     }
 
-    // Tracking ID সবসময় generate হবে
+    // Tracking ID  generate 
     const newTrackingId = uuidv4();
     setTrackingId(newTrackingId);
 
@@ -78,20 +80,31 @@ const ParcelForm = () => {
       cost,
       createdAt: new Date().toISOString(), // ISO format date
       createdBy: user?.email || "guest",
-      status: "Pending", // future tracking system এর জন্য দরকার
+      status: "Pending", // future tracking system এ
     };
 
     console.log("Saved Parcel:", parcelData);
 
-    toast.success("✅ Parcel info saved successfully!");
-    setShowConfirm(false);
+    
+
+    //server data 
+    axiossecure.post('/Parcel', parcelData)
+    .then(res=>{
+      console.log('Server Response:', res.data);
+      if(res.data.insertedId){
+        // todo: here payment gateway integration
+        toast.success(' Parcel info saved to server successfully!');
+      }
+    })
+
+
   };
 
   const regions = [...new Set(serviceCenters.map((sc) => sc.region))];
 
   return (
     <div className="container mx-auto p-6">
-      {/* Toast কে center এ show করা */}
+      {/* Toast  center এ show */}
       <Toaster position="top-center" />
 
       <h1 className="text-3xl font-bold mb-2">Send a Parcel</h1>

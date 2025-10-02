@@ -1,5 +1,5 @@
 import React from 'react';
-import UseAuthhooks from '../Hooks/UseAuthhooks';
+import UseAuthhooks from '../Hooks/UseAuthHooks';
 import { Navigate, useNavigate,
   useLocation, } from 'react-router';
 const Privateroutes = ({children}) => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import registerImage from "../../../assets/authImage.png"; // replaced missing register.png with authImage.png
-import UseAuthhooks from "../../../Hooks/UseAuthhooks";
+import UseAuthhooks from "../../../Hooks/UseAuthHooks";
 const Register = () => {
   const { createuser, user,} = UseAuthhooks(); // Placeholder for future auth integration
   const [formData, setFormData] = useState({

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import loginImage from "../../../assets/authImage.png"; // use existing authImage.png
 import { Link } from "react-router";
-import UseAuthhooks from "../../../Hooks/UseAuthhooks";
+import UseAuthhooks from "../../../Hooks/UseAuthHooks";
 
 
 const Login = () => {
-  const {signwihtgoogle} = UseAuthhooks()
+  const {signInWithGoogle ,user} = UseAuthhooks()
   const handlegooglesign=()=>{
-    signwihtgoogle()
+   signInWithGoogle()
     .then(result =>{
       console.log(result.user)
     })
