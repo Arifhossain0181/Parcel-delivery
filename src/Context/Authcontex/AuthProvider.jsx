@@ -42,6 +42,7 @@ const AuthProvider = ({ children }) => {
 
     return () => unsubscribe();
   }, []);
+  
 
   const authInfo = {
     createUser,
@@ -50,6 +51,7 @@ const AuthProvider = ({ children }) => {
     signInWithGoogle,
     user,
     loading,
+   
   };
 
   return (

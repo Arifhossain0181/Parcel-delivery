@@ -1,5 +1,9 @@
 import React from "react";
 import { Outlet } from "react-router";
+import Parcelicon from "../Pages/Shared/Parcelicon/Parcelicon";
+// Import NavLink from react-router-dom
+import { NavLink } from "react-router";
+
 const Dashboardlayout = () => {
   return (
     <div className="drawer lg:drawer-open">
@@ -45,11 +49,12 @@ const Dashboardlayout = () => {
         ></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
           {/* Sidebar content here */}
+          <Parcelicon></Parcelicon>
           <li>
-            <a>Sidebar Item 1</a>
+            <a>Home</a>
           </li>
           <li>
-            <a>Sidebar Item 2</a>
+           <NavLink to='/dashboard/MyParcel'>My Parcel</NavLink>
           </li>
         </ul>
       </div>

@@ -46,6 +46,7 @@ export const router = createBrowserRouter([
         path: "sendPercel",
         element: <Privateroutes> < SendParcel></ SendParcel></Privateroutes>,
       },
+     
     ],
   },
   {

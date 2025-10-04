@@ -1,27 +1,118 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import  UseAuthhooks  from '../../../Hooks/UseAuthHooks';
-import UseAxiosSecure from '../../../Hooks/UseAxiosSecure';
+import React from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import UseAuthhooks from "../../../Hooks/UseAuthhooks";
+import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
+import Swal from "sweetalert2";
+
 const MyParcel = () => {
-    const {user} = UseAuthhooks()
-    const axiossecure = UseAxiosSecure()
-   const { data: Parcels = [] } = useQuery({
-    queryKey: ['My-Parcel', user?.email],
-    enabled: !!user?.email,   // only run if email exists
+  const { user } = UseAuthhooks();
+  const axiosSecure = UseAxiosSecure();
+  const queryClient = useQueryClient();
+
+  // Fetch parcels
+  const { data: parcels = [], isLoading } = useQuery({
+    queryKey: ["parcels", user?.email],
+    enabled: !!user?.email,
     queryFn: async () => {
-        const res = await axiossecure.get(`Parcel?email=${user?.email}`);
-        return res.data;
+      const res = await axiosSecure.get(`/Parcel?email=${user?.email}`);
+      return res.data;
+    },
+  });
+
+  // Delete parcel
+  const handleDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      const res = await axiosSecure.delete(`/Parcel/${id}` ,{
+        method: 'DELETE'
+      });
+      if (res.data.deletedCount > 0) {
+        Swal.fire("Deleted!", "Your parcel has been deleted.", "success");
+        queryClient.invalidateQueries(["parcels", user?.email]);
+      }
     }
-});
+  }
 
-console.log(Parcels);
+  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
 
-return (
-    <div>
-        <h2>This is MyParcel page {Parcels.length}</h2>
+  return (
+    <div className="p-4 sm:p-6">
+      <h2 className="text-2xl font-bold mb-4 text-center">
+        My Parcels ({parcels.length})
+      </h2>
+
+      <div className="overflow-x-auto">
+        <table className="table-auto w-full border border-gray-200 text-sm sm:text-base">
+          <thead>
+            <tr className="bg-gray-100 text-black">
+              <th className="px-2 py-1">#</th>
+              <th className="px-2 py-1">Title</th>
+              <th className="px-2 py-1">Receiver</th>
+              <th className="px-2 py-1">Status</th>
+              <th className="px-2 py-1">Cost</th>
+              <th className="px-2 py-1">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {parcels.map((parcel, index) => (
+              <tr
+                key={parcel._id}
+                className="hover:bg-gray-50 border-b border-gray-200 text-black"
+              >
+                <td className="px-2 py-1">{index + 1}</td>
+                <td className="px-2 py-1">{parcel.title}</td>
+                <td className="px-2 py-1">{parcel.receiver_name}</td>
+                <td className="px-2 py-1">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs sm:text-sm font-medium ${
+                      parcel.status === "Delivered"
+                        ? "bg-green-100 text-green-700"
+                        : parcel.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {parcel.status}
+                  </span>
+                </td>
+                <td className="px-2 py-1">{parcel.cost}</td>
+                <td className="px-2 py-1 flex flex-wrap gap-2">
+                  <button className="btn btn-sm btn-info text-white">View</button>
+                  <button
+                    className="btn btn-sm btn-success text-white"
+                    disabled={parcel.status === "Paid"}
+                  >
+                    {parcel.status === "Paid" ? "Paid" : "Pay"}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(parcel._id)}
+                    className="btn btn-sm btn-error text-white"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {parcels.length === 0 && (
+          <p className="text-center mt-6 text-gray-500">
+            No parcels found yet.
+          </p>
+        )}
+      </div>
     </div>
-);
-
+  );
 };
 
-export default MyParcel;////
+export default MyParcel;

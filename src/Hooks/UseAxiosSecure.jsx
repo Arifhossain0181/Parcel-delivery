@@ -1,17 +1,10 @@
-import React from 'react';
-import axios from 'axios';
-
-//  axios instance create
-
-const axiossecure = axios.create({
-    baseURL:'http://localhost:3000',
-
-
-})
-
+import axios from "axios";
 
 const UseAxiosSecure = () => {
-    return {axiossecure};
+  const axiosSecure = axios.create({
+    baseURL: "http://localhost:3000", // must match backend port
+  });
+  return axiosSecure;
 };
 
 export default UseAxiosSecure;
