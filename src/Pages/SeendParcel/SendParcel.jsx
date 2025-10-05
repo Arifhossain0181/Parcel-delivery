@@ -3,17 +3,21 @@ import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import serviceCenters from "../../../public/servicesenter.json";
-import UseAuthhooks from "../../Hooks/UseAuthHooks"; //
+import UseAuthhooks from "../../Hooks/UseAuthhooks"; //
 import UseAxiosSecure from "../../Hooks/UseAxiosSecure"; // secure axios instance 
+import { useNavigate } from "react-router-dom";
+
 const ParcelForm = () => {
   const { user } =UseAuthhooks(); // logged in user info (email)
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-   const { axiossecure } = UseAxiosSecure(); // secure axios instance
+   const  axiossecure  = UseAxiosSecure(); // secure axios instance
   // state
   const [cost, setCost] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -94,6 +98,7 @@ const ParcelForm = () => {
       if(res.data.insertedId){
         // todo: here payment gateway integration
         toast.success(' Parcel info saved to server successfully!');
+            setTimeout(() => navigate("/dashboard/MyParcel"), 1000); 
       }
     })
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import UseAuthhooks from '../Hooks/UseAuthHooks';
+import UseAuthhooks from '../Hooks/UseAuthhooks';
 import { Navigate, useNavigate,
   useLocation, } from 'react-router';
 const Privateroutes = ({children}) => {
@@ -10,7 +10,7 @@ const Privateroutes = ({children}) => {
         return <span className="loading loading-ball loading-xl"></span>
     }
     if(!user){
-         return <Navigate to="/login" state={{ from: location }} replace />;
+         return <Navigate to="/login" state={{ from: location.pathname }} replace />;
     }
     return children;
 };

@@ -3,11 +3,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
-
+import { Link } from "react-router";
+import { useNavigate } from "react-router";
 const MyParcel = () => {
   const { user } = UseAuthhooks();
   const axiosSecure = UseAxiosSecure();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Fetch parcels
   const { data: parcels = [], isLoading } = useQuery({
@@ -32,14 +34,18 @@ const MyParcel = () => {
     });
 
     if (confirm.isConfirmed) {
-      const res = await axiosSecure.delete(`/Parcel/${id}` ,{
-        method: 'DELETE'
+      const res = await axiosSecure.delete(`/Parcel/${id}`, {
+        method: "DELETE",
       });
       if (res.data.deletedCount > 0) {
         Swal.fire("Deleted!", "Your parcel has been deleted.", "success");
         queryClient.invalidateQueries(["parcels", user?.email]);
       }
     }
+  };
+  const handlePayment = (id) => {
+    console.log(id);
+    navigate(`/dashboard/Payment/${id}`);
   }
 
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
@@ -86,13 +92,16 @@ const MyParcel = () => {
                 </td>
                 <td className="px-2 py-1">{parcel.cost}</td>
                 <td className="px-2 py-1 flex flex-wrap gap-2">
-                  <button className="btn btn-sm btn-info text-white">View</button>
-                  <button
+                  <button className="btn btn-sm btn-info text-white">
+                    View
+                  </button>
+                  <Link to={`/dashboard/Payment/${parcel._id}`}
+                  onClick={()=>handlePayment(parcel._id)}
                     className="btn btn-sm btn-success text-white"
                     disabled={parcel.status === "Paid"}
                   >
-                    {parcel.status === "Paid" ? "Paid" : "Pay"}
-                  </button>
+                    {parcel.status === "Paid" ? "Paid" : "Pay"} 
+                  </Link>
                   <button
                     onClick={() => handleDelete(parcel._id)}
                     className="btn btn-sm btn-error text-white"
