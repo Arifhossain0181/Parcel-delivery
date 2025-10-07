@@ -3,15 +3,15 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
-import { Link } from "react-router";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+
 const MyParcel = () => {
   const { user } = UseAuthhooks();
   const axiosSecure = UseAxiosSecure();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Fetch parcels
+  // Fetch parcels for this user
   const { data: parcels = [], isLoading } = useQuery({
     queryKey: ["parcels", user?.email],
     enabled: !!user?.email,
@@ -34,19 +34,17 @@ const MyParcel = () => {
     });
 
     if (confirm.isConfirmed) {
-      const res = await axiosSecure.delete(`/Parcel/${id}`, {
-        method: "DELETE",
-      });
+      const res = await axiosSecure.delete(`/Parcel/${id}`);
       if (res.data.deletedCount > 0) {
         Swal.fire("Deleted!", "Your parcel has been deleted.", "success");
         queryClient.invalidateQueries(["parcels", user?.email]);
       }
     }
   };
+
   const handlePayment = (id) => {
-    console.log(id);
     navigate(`/dashboard/Payment/${id}`);
-  }
+  };
 
   if (isLoading) return <p className="text-center mt-10">Loading...</p>;
 
@@ -80,14 +78,16 @@ const MyParcel = () => {
                 <td className="px-2 py-1">
                   <span
                     className={`px-2 py-1 rounded-full text-xs sm:text-sm font-medium ${
-                      parcel.status === "Delivered"
+                      parcel.paymentStatus === "paid"
                         ? "bg-green-100 text-green-700"
-                        : parcel.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-blue-100 text-blue-700"
+                        : parcel.status === "Delivered"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {parcel.status}
+                    {parcel.paymentStatus === "paid"
+                      ? "Paid"
+                      : parcel.status}
                   </span>
                 </td>
                 <td className="px-2 py-1">{parcel.cost}</td>
@@ -95,13 +95,13 @@ const MyParcel = () => {
                   <button className="btn btn-sm btn-info text-white">
                     View
                   </button>
-                  <Link to={`/dashboard/Payment/${parcel._id}`}
-                  onClick={()=>handlePayment(parcel._id)}
-                    className="btn btn-sm btn-success text-white"
-                    disabled={parcel.status === "Paid"}
+                  <button
+                    onClick={() => handlePayment(parcel._id)}
+                    className={`btn btn-sm btn-success text-white`}
+                    disabled={parcel.paymentStatus === "paid"}
                   >
-                    {parcel.status === "Paid" ? "Paid" : "Pay"} 
-                  </Link>
+                    {parcel.paymentStatus === "paid" ? "Paid" : "Pay"}
+                  </button>
                   <button
                     onClick={() => handleDelete(parcel._id)}
                     className="btn btn-sm btn-error text-white"

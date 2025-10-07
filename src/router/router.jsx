@@ -11,7 +11,10 @@ import Privateroutes from "../../src/Routes/Privateroutes";
 import  SendParcel from "../Pages/SeendParcel/SendParcel";
 import Dashboardlayout from "../Layout/Dashboardlayout";
 import Payment from "../Pages/Dashboard/MyParcel/Payment/Payment";
+import  TrackParcel from '../Pages/Dashboard/TrackParcel/TrackParcel'
+
 import MyParcel from "../Pages/Dashboard/MyParcel/MyParcel";
+import Paymenthistory from '../Pages/Dashboard/MyParcel/Payment/Paymenthistory'
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -61,6 +64,14 @@ export const router = createBrowserRouter([
       {
         path:'Payment/:id',
         Component: Payment,
+      },
+      {
+        path:'Paymenthistory',
+        Component:Paymenthistory
+
+      },{
+        path:'Track',
+        Component: TrackParcel
       }
     ]
   }
