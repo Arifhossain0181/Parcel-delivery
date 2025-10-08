@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import loginImage from "../../../assets/authImage.png";
 import { Link, useNavigate, useLocation } from "react-router";
 import UseAuthhooks from "../../../Hooks/UseAuthhooks";
-
+import useAxios from '../../../Hooks/useAxios'
 const Login = () => {
   const { signInWithGoogle, user } = UseAuthhooks();
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosInstance= useAxios()
   
   // If user came from a private page → redirect back there
   const from = location.state?.from?.pathname || "/";
@@ -14,7 +15,20 @@ const Login = () => {
   const handlegooglesign = () => {
     signInWithGoogle()
       .then((result) => {
+        const user = result.user
         console.log(result.user);
+         const userInfo = {
+        email: user.email,
+        name:  user.displayName,
+        role: "user", // default role
+        created_at: new Date().toISOString(),
+        last_log_in: new Date().toISOString(),
+      };
+     const res= axiosInstance.post(`/users`,userInfo);
+     console.log('user gooogle djfjdfjdskfjsd' ,res.data)
+
+
+
         navigate(from, { replace: true }); //  redirects back after login
       })
       .catch((error) => {

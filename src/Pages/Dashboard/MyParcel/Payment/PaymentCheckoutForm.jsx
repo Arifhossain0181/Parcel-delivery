@@ -4,9 +4,7 @@ import { useParams, useNavigate } from "react-router";
 
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import {
-  useQuery,useQueryClient
-
-} from "@tanstack/react-query";
+  useQuery,useQueryClient} from "@tanstack/react-query";
 import UseAxiosSecure from "../../../../Hooks/UseAxiosSecure";
 import UseAuthhooks from "../../../../Hooks/UseAuthhooks";
 const PaymentCheckoutForm = () => {

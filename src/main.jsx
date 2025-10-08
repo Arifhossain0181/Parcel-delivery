@@ -6,11 +6,8 @@ import "aos/dist/aos.css";
 import { RouterProvider } from "react-router-dom"; //  FIXED
 import { router } from "./router/router";
 import AuthProvider from "./Context/Authcontex/AuthProvider";
-import {
-  QueryClient,
-  QueryClientProvider,
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-} from '@tanstack/react-query'
 AOS.init();
 const queryClient = new QueryClient()
 createRoot(document.getElementById("root")).render(

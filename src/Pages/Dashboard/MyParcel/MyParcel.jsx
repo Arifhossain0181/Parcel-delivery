@@ -3,7 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
+// Import Link and NavLink
+import { Link, NavLink } from "react-router";
 
 const MyParcel = () => {
   const { user } = UseAuthhooks();
@@ -16,7 +18,9 @@ const MyParcel = () => {
     queryKey: ["parcels", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/Parcel?email=${user?.email}`);
+      const res = await axiosSecure.get(`/Parcel?email=${user?.email}`,{
+       
+      });
       return res.data;
     },
   });
@@ -55,7 +59,7 @@ const MyParcel = () => {
       </h2>
 
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border border-gray-200 text-sm sm:text-base">
+        <table className="table-auto w-full border border-gray-200 bg-white text-sm sm:text-base">
           <thead>
             <tr className="bg-gray-100 text-black">
               <th className="px-2 py-1">#</th>
@@ -63,6 +67,7 @@ const MyParcel = () => {
               <th className="px-2 py-1">Receiver</th>
               <th className="px-2 py-1">Status</th>
               <th className="px-2 py-1">Cost</th>
+              <th className="px-2 py-1">trackingId</th>
               <th className="px-2 py-1">Action</th>
             </tr>
           </thead>
@@ -70,7 +75,7 @@ const MyParcel = () => {
             {parcels.map((parcel, index) => (
               <tr
                 key={parcel._id}
-                className="hover:bg-gray-50 border-b border-gray-200 text-black"
+                className="hover:bg-[#cbea66] border-b border-gray-200 text-black"
               >
                 <td className="px-2 py-1">{index + 1}</td>
                 <td className="px-2 py-1">{parcel.title}</td>
@@ -85,23 +90,32 @@ const MyParcel = () => {
                         : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {parcel.paymentStatus === "paid"
-                      ? "Paid"
-                      : parcel.status}
+                    {parcel.paymentStatus === "paid" ? "Paid" : parcel.status}
                   </span>
                 </td>
                 <td className="px-2 py-1">{parcel.cost}</td>
+                <td className="px-2 py-1">{parcel.trackingId}</td>
                 <td className="px-2 py-1 flex flex-wrap gap-2">
                   <button className="btn btn-sm btn-info text-white">
                     View
                   </button>
-                  <button
-                    onClick={() => handlePayment(parcel._id)}
-                    className={`btn btn-sm btn-success text-white`}
-                    disabled={parcel.paymentStatus === "paid"}
-                  >
-                    {parcel.paymentStatus === "paid" ? "Paid" : "Pay"}
-                  </button>
+                  {parcel.paymentStatus === "paid" && parcel.trackingId ? (
+                    <Link
+                      to={`/dashboard/Track`}
+                      className="btn btn-sm btn-success text-white"
+                    >
+                      Tracking
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => handlePayment(parcel._id)}
+                      className="btn btn-sm btn-success text-white"
+                      disabled={parcel.paymentStatus === "paid"}
+                    >
+                      Pay
+                    </button>
+                  )}
+
                   <button
                     onClick={() => handleDelete(parcel._id)}
                     className="btn btn-sm btn-error text-white"
