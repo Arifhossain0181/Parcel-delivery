@@ -15,6 +15,8 @@ import  TrackParcel from '../Pages/Dashboard/TrackParcel/TrackParcel'
 
 import MyParcel from "../Pages/Dashboard/MyParcel/MyParcel";
 import Paymenthistory from '../Pages/Dashboard/MyParcel/Payment/Paymenthistory'
+import Pendingriders from '../Pages/Dashboard/Pendingriders/Pendingriders'
+import  ActiveRiders  from '../Pages/Dashboard/Activeriders/ActiveRiders'
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -26,7 +28,8 @@ export const router = createBrowserRouter([
       },
       {
         path: "Rider", // now accessible via "/Rider"
-        Component: Rider,
+        element: <Privateroutes><Rider></Rider></Privateroutes>,
+         loader: () => fetch("../../public/servicesenter.json"),
       },
       {
         path: "about",
@@ -72,7 +75,16 @@ export const router = createBrowserRouter([
       },{
         path:'Track',
         Component: TrackParcel
+      },
+      {
+        path:'PendingRiders',
+        Component:Pendingriders,
+      },
+      {
+        path:'ActiveRiders',
+        Component: ActiveRiders ,
       }
+
     ]
   }
 ]);

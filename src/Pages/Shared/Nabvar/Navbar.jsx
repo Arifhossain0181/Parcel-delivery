@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, Link } from "react-router";
 import Parcelicon from "../Parcelicon/Parcelicon";
-import UseAuthhooks from "../../../Hooks/UseAuthHooks";
+import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 import { useLocation } from "react-router";
 const Navbar = () => {
   const { user, signOutUser } = UseAuthhooks();
@@ -13,6 +13,7 @@ const Navbar = () => {
       <li><NavLink to="/Coverage">Coverage</NavLink></li>
       <li><NavLink to="/about">About</NavLink></li>
       <li><NavLink to="/Pricing">Pricing</NavLink></li>
+      <li><NavLink to="/Rider">Rider</NavLink></li>
       <li><NavLink to="/sendPercel">sendPercel</NavLink></li>
       {user && (
         <li>
@@ -24,7 +25,7 @@ const Navbar = () => {
 
   return (
     <div className="navbar bg-base-100 shadow-sm">
-      {/* ✅ Left Side */}
+      {/*  Left Side */}
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -52,12 +53,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ✅ Center */}
+      {/*  Center */}
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{linka}</ul>
       </div>
 
-      {/* ✅ Right Side (user info or login) */}
+      {/*  Right Side (user info or login) */}
       <div className="navbar-end space-x-3">
         {user ? (
           <div className="dropdown dropdown-end">

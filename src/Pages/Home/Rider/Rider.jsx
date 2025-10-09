@@ -1,26 +1,135 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../../../assets/agent-pending.png";
+import Swal from "sweetalert2";
+import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
+
+const bangladeshDistricts = [
+  "Bagerhat",
+  "Bandarban",
+  "Barguna",
+  "Barisal",
+  "Bhola",
+  "Bogra",
+  "Brahmanbaria",
+  "Chandpur",
+  "Chapai Nawabganj",
+  "Chattogram",
+  "Chuadanga",
+  "Comilla",
+  "Cox's Bazar",
+  "Dhaka",
+  "Dinajpur",
+  "Faridpur",
+  "Feni",
+  "Gaibandha",
+  "Gazipur",
+  "Gopalganj",
+  "Habiganj",
+  "Jamalpur",
+  "Jashore",
+  "Jhalokathi",
+  "Jhenaidah",
+  "Joypurhat",
+  "Khagrachhari",
+  "Khulna",
+  "Kishoreganj",
+  "Kurigram",
+  "Kushtia",
+  "Lakshmipur",
+  "Lalmonirhat",
+  "Madaripur",
+  "Magura",
+  "Manikganj",
+  "Meherpur",
+  "Munshiganj",
+  "Mymensingh",
+  "Naogaon",
+  "Narail",
+  "Narsingdi",
+  "Natore",
+  "Netrokona",
+  "Nilphamari",
+  "Noakhali",
+  "Pabna",
+  "Panchagarh",
+  "Patuakhali",
+  "Pirojpur",
+  "Rajbari",
+  "Rajshahi",
+  "Rangamati",
+  "Rangpur",
+  "Satkhira",
+  "Shariatpur",
+  "Sherpur",
+  "Sirajganj",
+  "Sunamganj",
+  "Sylhet",
+  "Tangail",
+  "Thakurgaon",
+];
 
 const Rider = () => {
-  const handleSubmitted = (event) => {
+  const [searchDistrict, setSearchDistrict] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const axiosSecure = UseAxiosSecure();
+
+  const filteredDistricts = bangladeshDistricts.filter((d) =>
+    d.toLowerCase().includes(searchDistrict.toLowerCase())
+  );
+
+  // ✅ CHANGED — made async so we can await axios call properly
+  const handleSubmitted = async (event) => {
     event.preventDefault();
     const form = event.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const nid = form.nid.value;
-    const age = form.age.value;
-    const religion = form.religion.value;
-    const house = form.house.value;
-    const contact = form.contact.value;
-    const weight = form.weight.value;
-    const address = form.address.value;
-    const license = form.license.value;   
+
     const rider = {
-      name,
-      email,nid,age,religion,house,contact,weight,address,license
+      name: form.name.value,
+      email: form.email.value,
+      nid: form.nid.value,
+      age: form.age.value,
+      religion: form.religion.value,
+      house: form.house.value,
+      contact: form.contact.value,
+      weight: form.weight.value,
+      address: selectedDistrict,
+      license: form.license.value,
     };
-    console.log(rider);
-    form.reset();
+
+    try {
+      const res = await axiosSecure.post(`/rideres`, rider);
+
+      if (res.data.insertedId) {
+        Swal.fire({
+          title: "✅ Success!",
+          html: "<b>Your form has been submitted successfully!</b>",
+          icon: "success",
+          confirmButtonText: "Great!",
+          confirmButtonColor: "#4CAF50",
+          background: "#f0fdf4",
+          iconColor: "#4CAF50",
+          timer: 2500,
+          timerProgressBar: true,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp",
+          },
+        });
+
+        //  CHANGED — moved reset *inside* success block
+        form.reset();
+        setSelectedDistrict("");
+        setSearchDistrict("");
+      }
+    } catch (error) {
+      console.error("Error submitting rider form:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed",
+        text: "Something went wrong. Please try again.",
+      });
+    }
   };
 
   return (
@@ -43,7 +152,7 @@ const Rider = () => {
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Your Name</label>
               <input
-              name="name"
+                name="name"
                 type="text"
                 placeholder="Full Name"
                 className="input input-bordered w-full"
@@ -55,7 +164,7 @@ const Rider = () => {
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Your Email</label>
               <input
-              name="email"
+                name="email"
                 type="email"
                 placeholder="Email"
                 className="input input-bordered w-full"
@@ -63,11 +172,11 @@ const Rider = () => {
               />
             </div>
 
-            {/* NID No */}
+            {/* NID */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">NID No</label>
               <input
-              name="nid"
+                name="nid"
                 type="text"
                 placeholder="NID No"
                 className="input input-bordered w-full"
@@ -79,7 +188,7 @@ const Rider = () => {
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Your Age</label>
               <input
-              name="age"
+                name="age"
                 type="number"
                 placeholder="Age"
                 className="input input-bordered w-full"
@@ -87,11 +196,15 @@ const Rider = () => {
               />
             </div>
 
-            {/* Religion Dropdown */}
+            {/* Religion */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Religion</label>
-              <select className="select select-bordered w-full" name="religion" required>
-                <option disabled selected>
+              <select
+                className="select select-bordered w-full"
+                name="religion"
+                required
+              >
+                <option value="" disabled>
                   Select Religion
                 </option>
                 <option>Islam</option>
@@ -101,11 +214,15 @@ const Rider = () => {
               </select>
             </div>
 
-            {/* Warehouse Dropdown */}
+            {/* Warehouse */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Which Warehouse?</label>
-              <select name="house" className="select select-bordered w-full" required>
-                <option disabled selected>
+              <select
+                name="house"
+                className="select select-bordered w-full"
+                required
+              >
+                <option value="" disabled>
                   Select Warehouse
                 </option>
                 <option>Warehouse 1</option>
@@ -118,7 +235,7 @@ const Rider = () => {
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Contact Number</label>
               <input
-              name="contact"
+                name="contact"
                 type="text"
                 placeholder="Contact"
                 className="input input-bordered w-full"
@@ -130,21 +247,45 @@ const Rider = () => {
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Full Weight Capacity</label>
               <input
-              name="weight"
+                name="weight"
                 type="text"
                 placeholder="Weight in Kg"
                 className="input input-bordered w-full"
-                required
               />
             </div>
 
-            
+            {/* District */}
+            <div className="flex flex-col md:col-span-2">
+              <label className="mb-1 font-medium">Your District</label>
+              <input
+                type="text"
+                placeholder="Search District"
+                value={searchDistrict}
+                onChange={(e) => setSearchDistrict(e.target.value)}
+                className="input input-bordered mb-2 w-full"
+              />
+              <select
+                className="select select-bordered w-full"
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                required
+              >
+                <option value="" disabled>
+                  Select District
+                </option>
+                {filteredDistricts.map((district) => (
+                  <option key={district} value={district}>
+                    {district}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {/* Driving License */}
+            {/* License */}
             <div className="flex flex-col md:col-span-2">
               <label className="mb-1 font-medium">Driving License No</label>
               <input
-              name="license"
+                name="license"
                 type="text"
                 placeholder="License Number"
                 className="input input-bordered w-full"
@@ -152,7 +293,7 @@ const Rider = () => {
               />
             </div>
 
-            {/* Submit button spans full width */}
+            {/* Submit */}
             <div className="col-span-1 md:col-span-2">
               <button className="w-full bg-amber-400 text-white font-semibold py-3 rounded-lg hover:bg-amber-500 transition">
                 Submit
@@ -161,7 +302,7 @@ const Rider = () => {
           </form>
         </div>
 
-        {/* Right: Image */}
+        {/* Right Image */}
         <div className="lg:w-1/2 hidden lg:flex items-center justify-center bg-amber-50">
           <img src={logo} alt="Rider" className="object-cover rounded-r-xl" />
         </div>
