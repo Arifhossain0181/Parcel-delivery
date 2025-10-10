@@ -17,6 +17,7 @@ import MyParcel from "../Pages/Dashboard/MyParcel/MyParcel";
 import Paymenthistory from '../Pages/Dashboard/MyParcel/Payment/Paymenthistory'
 import Pendingriders from '../Pages/Dashboard/Pendingriders/Pendingriders'
 import  ActiveRiders  from '../Pages/Dashboard/Activeriders/ActiveRiders'
+import MakeAdmin from '../Pages/Dashboard/MakeAdmin/Makeadmin'
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -83,6 +84,10 @@ export const router = createBrowserRouter([
       {
         path:'ActiveRiders',
         Component: ActiveRiders ,
+      },
+      {
+        path:'makeadmin',
+        Component:MakeAdmin
       }
 
     ]

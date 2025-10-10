@@ -88,6 +88,8 @@ const Dashboardlayout = () => {
         <FiClock /> Pending Riders
       </NavLink>
     </li>
+    {/*admin router */}
+     <li> <NavLink to= '/dashboard/makeadmin'>Make Admin</NavLink></li>
   </ul>
 </div>
 

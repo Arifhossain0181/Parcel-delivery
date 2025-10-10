@@ -2,34 +2,37 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
- 
 
-const Pendingriders = () => {
+const PendingRiders = () => {
   const axiosSecure = UseAxiosSecure();
   const queryClient = useQueryClient();
   const [selectedRider, setSelectedRider] = useState(null);
 
-  // Fetch pending riders using React Query
-
-const { data: pendingRiders = [], isLoading, isError } = useQuery({
-  queryKey: ["pendingRiders"],
-  queryFn: async () => {
-    const res = await axiosSecure.get("/rideres/pending");
-    return res.data;
-  },
-});
-
+  // Fetch pending riders
+  const { data: pendingRiders = [], isLoading, isError } = useQuery({
+    queryKey: ["pendingRiders"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/rideres/pending");
+      return res.data;
+    },
+  });
 
   // Approve rider
   const handleApprove = async (id) => {
     try {
-      const res = await axiosSecure.patch(`/rideres/approve/${id}`, { status: "Active" });
-      if (res.data.modifiedCount > 0) {
-        Swal.fire({ icon: "success", title: "Approved!", timer: 1500, showConfirmButton: false });
-        queryClient.invalidateQueries(["pendingRiders"]); // refetch
+      const res = await axiosSecure.patch(`/rideres/approve/${id}`);
+      if (res.data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Approved!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        queryClient.invalidateQueries(["pendingRiders"]);
         setSelectedRider(null);
       }
     } catch (err) {
+      console.error(err);
       Swal.fire({ icon: "error", title: "Error", text: "Failed to approve rider." });
     }
   };
@@ -39,12 +42,38 @@ const { data: pendingRiders = [], isLoading, isError } = useQuery({
     try {
       const res = await axiosSecure.delete(`/rideres/${id}`);
       if (res.data.deletedCount > 0) {
-        Swal.fire({ icon: "info", title: "Rejected!", timer: 1500, showConfirmButton: false });
-        queryClient.invalidateQueries(["pendingRiders"]); // refetch
+        Swal.fire({
+          icon: "info",
+          title: "Rejected!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        queryClient.invalidateQueries(["pendingRiders"]);
         setSelectedRider(null);
       }
     } catch (err) {
+      console.error(err);
       Swal.fire({ icon: "error", title: "Error", text: "Failed to reject rider." });
+    }
+  };
+
+  // Deactivate rider
+  const handleDeactivate = async (id) => {
+    try {
+      const res = await axiosSecure.patch(`/rideres/deactivate/${id}`);
+      if (res.data.modifiedCount > 0) {
+        Swal.fire({
+          icon: "info",
+          title: "Deactivated!",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        queryClient.invalidateQueries(["pendingRiders"]);
+        setSelectedRider(null);
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire({ icon: "error", title: "Error", text: "Failed to deactivate rider." });
     }
   };
 
@@ -54,8 +83,7 @@ const { data: pendingRiders = [], isLoading, isError } = useQuery({
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6 text-[#cbea66]">Pending Riders</h1>
-
-      <div className="overflow-x-auto text-black bg-white shadow-lg rounded-lg ">
+      <div className="overflow-x-auto bg-white shadow-lg rounded-lg text-black">
         <table className="table w-full">
           <thead className="bg-amber-200 text-gray-800">
             <tr>
@@ -84,7 +112,7 @@ const { data: pendingRiders = [], isLoading, isError } = useQuery({
                   <td>{rider.contact}</td>
                   <td>
                     <button
-                      className="btn btn-md border-0 bg-[#9eca10] text-white hover:bg-[#cbea66]"
+                      className="btn btn-md bg-[#9eca10] text-white hover:bg-[#cbea66]"
                       onClick={() => setSelectedRider(rider)}
                     >
                       View Details
@@ -108,7 +136,6 @@ const { data: pendingRiders = [], isLoading, isError } = useQuery({
               <p><strong>Name:</strong> {selectedRider.name}</p>
               <p><strong>Email:</strong> {selectedRider.email}</p>
               <p><strong>Age:</strong> {selectedRider.age}</p>
-              <p><strong>Religion:</strong> {selectedRider.religion}</p>
               <p><strong>District:</strong> {selectedRider.address}</p>
               <p><strong>Contact:</strong> {selectedRider.contact}</p>
               <p><strong>License:</strong> {selectedRider.license}</p>
@@ -116,21 +143,29 @@ const { data: pendingRiders = [], isLoading, isError } = useQuery({
             </div>
 
             <div className="mt-6 flex justify-between">
+              {selectedRider.status === "Pending" && (
+                <button
+                  onClick={() => handleApprove(selectedRider._id)}
+                  className="btn bg-[#92bd07] text-white hover:bg-[#cbea66] w-1/3"
+                >
+                  Approve
+                </button>
+              )}
+
               <button
-                onClick={() => handleApprove(selectedRider._id)}
-                className="btn bg-[#92bd07] text-white"
+                onClick={() =>
+                  selectedRider.status === "Pending"
+                    ? handleReject(selectedRider._id)
+                    : handleDeactivate(selectedRider._id)
+                }
+                className="btn bg-red-600 text-white hover:bg-red-700 w-1/3"
               >
-                Approve
+                {selectedRider.status === "Pending" ? "Reject" : "Deactivate"}
               </button>
-              <button
-                onClick={() => handleReject(selectedRider._id)}
-                className="btn bg-[#92bd07] hover:bg-red-600 text-white"
-              >
-                Reject
-              </button>
+
               <button
                 onClick={() => setSelectedRider(null)}
-                className="btn bg-gray-300 hover:bg-gray-400 text-black"
+                className="btn bg-gray-300 text-black hover:bg-gray-400 w-1/3"
               >
                 Close
               </button>
@@ -142,4 +177,4 @@ const { data: pendingRiders = [], isLoading, isError } = useQuery({
   );
 };
 
-export default Pendingriders;
+export default PendingRiders;

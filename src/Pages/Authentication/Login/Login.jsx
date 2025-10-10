@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router";
 import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 import useAxios from '../../../Hooks/useAxios'
 const Login = () => {
-  const { signInWithGoogle, user } = UseAuthhooks();
+  const { signInWithGoogle, user ,signIn } = UseAuthhooks();
   const navigate = useNavigate();
   const location = useLocation();
   const axiosInstance= useAxios()
@@ -46,6 +46,14 @@ const Login = () => {
     e.preventDefault();
     console.log("Form Submitted:", formData);
     //  after successful login:
+    signIn( formData.email, formData.password)
+    .then(result=>{
+      console.log(result)
+    })
+    .catch(error=>{
+      console.log(error)
+    })
+  
     navigate(from, { replace: true });
   };
 
