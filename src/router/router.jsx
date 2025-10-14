@@ -18,6 +18,9 @@ import Paymenthistory from '../Pages/Dashboard/MyParcel/Payment/Paymenthistory'
 import Pendingriders from '../Pages/Dashboard/Pendingriders/Pendingriders'
 import  ActiveRiders  from '../Pages/Dashboard/Activeriders/ActiveRiders'
 import MakeAdmin from '../Pages/Dashboard/MakeAdmin/Makeadmin'
+import Forbidden from "../Pages/Forbidden/Forbidden";
+import AdminRoutes from "../Routes/AdminRoutes";
+import AssignRiders from "../Pages/Dashboard/AssignRiders/AssignRiders";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -44,6 +47,9 @@ export const router = createBrowserRouter([
         path: "login",
         Component: Login,
       },
+      {
+        path:'forbidden',
+      Component:Forbidden      },
 
       {
         path: "Coverage",
@@ -78,16 +84,21 @@ export const router = createBrowserRouter([
         Component: TrackParcel
       },
       {
+        path:'assign',
+        element:<AdminRoutes><AssignRiders></AssignRiders></AdminRoutes>,
+      },
+      {
         path:'PendingRiders',
-        Component:Pendingriders,
+        element:<AdminRoutes><Pendingriders></Pendingriders></AdminRoutes>,
       },
       {
         path:'ActiveRiders',
-        Component: ActiveRiders ,
+        element:<AdminRoutes><ActiveRiders></ActiveRiders></AdminRoutes>,
       },
       {
         path:'makeadmin',
-        Component:MakeAdmin
+        Component:MakeAdmin,
+        element:<AdminRoutes><MakeAdmin></MakeAdmin></AdminRoutes>   ,
       }
 
     ]

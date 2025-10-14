@@ -44,7 +44,7 @@ async function run() {
     const Paymenthistorycollection = db.collection("Payments");
     const TrackingCollection = db.collection("tracking");
     const usersCollection = db.collection("users");
-    const riderescollection = db.collection('rideres')
+    const riderescollection = db.collection("rideres");
 
     //custom middel ware in for jwt
 
@@ -61,7 +61,7 @@ async function run() {
 
         const token = authHeader.split(" ")[1]; // Bearer <token>
         if (!token) {
-          return res
+          return res 
             .status(401)
             .send({ message: "Unauthorized access: no token" });
         }
@@ -77,10 +77,21 @@ async function run() {
       }
     };
 
+    // jwt end 
+    const verifyAdmin = async (req, res, next) => {
+       const email = req.decoded.email;
+       const query = { email: email };
+       const user = await usersCollection.findOne(query);
+       if(!user || user.role !== 'admin'){
+        return res.status(403).send({message: 'forbidden access'})
+       }
+        next();
+    }
+
     app.post("/users", async (req, res) => {
       try {
         const user = req.body;
-        const email = user.email; // ✅ fixed typo
+        const email = user.email; //  fixed typo
 
         // Check if user already exists
         const existingUser = await usersCollection.findOne({ email });
@@ -103,6 +114,86 @@ async function run() {
         res.status(500).send({ message: "Server error", error });
       }
     });
+
+    
+
+
+    // GET /users/search?email=user@example.com
+    app.get("/users/search", async (req, res) => {
+      const email = req.query.email;
+      if (!email)
+        return res
+          .status(400)
+          .send({ success: false, message: "Email required" });
+
+      try {
+        const regex = new RegExp(email ,'i') // artial match
+        const user = await usersCollection.find({ email: {$regex:regex} }).limit(10).toArray()
+        if (!user)
+          return res
+            .status(404)
+            .send({ success: false, message: "User not found" });
+
+        res.send({ success: true, user });
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to search user" });
+      }
+    });
+
+    // PATCH /users/admin/:id
+app.patch("/users/admin/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await usersCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { role: "admin" } }
+    );
+    res.send({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ success: false, message: "Failed to make admin" });
+  }
+});
+
+// PATCH /users/remove-admin/:id
+app.patch("/users/remove-admin/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await usersCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { role: "user" } }
+    );
+    res.send({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ success: false, message: "Failed to remove admin" });
+  }
+});
+
+app.get("/users/role/:email",verifytoken, async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    //from the  database to find user 
+    const user = await usersCollection.findOne({ email });
+
+    // if user not found
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // send back the role
+    res.send({ role: user.role });
+  } catch (error) {
+    console.error("Error fetching user role:", error);
+    res.status(500).send({ message: "Server error" });
+  }
+});
+
+
 
     // Post : create a new Parcel
     app.post("/Parcel", async (req, res) => {
@@ -176,6 +267,30 @@ async function run() {
         res.status(402).send(error);
       }
     });
+    //  Mark parcel as collected
+app.patch("/parcel/collected/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const updateDoc = {
+      $set: {
+        deliveryStatus: "Collected",
+        status: "Delivered",
+        collectedAt: new Date(),
+      },
+    };
+    const result = await Parcelcollection.updateOne(filter, updateDoc);
+
+    res.send({
+      message: "Parcel marked as collected",
+      modified: result.modifiedCount > 0,
+    });
+  } catch (error) {
+    console.error("Mark collected error:", error);
+    res.status(500).send({ message: error.message });
+  }
+});
+
 
     //  Mark Parcel as paid & store payment record
     app.post("/payment-success", async (req, res) => {
@@ -188,6 +303,8 @@ async function run() {
           $set: {
             paymentStatus: "paid",
             transactionId,
+            status: "Processing",
+             deliveryStatus: "Not Collected", 
             paidAt: new Date(),
           },
         };
@@ -300,99 +417,149 @@ async function run() {
       }
     });
 
+    // Add new rider
+    app.post("/rideres", async (req, res) => {
+      try {
+        const rider = req.body;
+        rider.status = "Pending";
+        const result = await riderescollection.insertOne(rider);
+        res.send({ success: true, insertedId: result.insertedId });
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to add rider" });
+      }
+    });
 
-    // rider side 
-    app.post('/rideres' ,async (req ,res ) =>{
-      const rider = req.body;
-        rider.status = "Pending"; // default
-      const result = await riderescollection.insertOne(rider)
-      res.send(result)
-    })
-  
-// Get pending riders
-app.get('/rideres/pending', async (req, res) => {
-  try {
-    const pendingRiders = await riderescollection.find({ status: "Pending" }).toArray();
-    res.send(pendingRiders);
-  } catch (error) {
-    console.error("Error fetching pending riders:", error);
-    res.status(500).send({ message: "Failed to fetch pending riders" });
-  }
-});
+    // Get pending riders
+    app.get("/rideres/pending",verifytoken, verifyAdmin, async (req, res) => {
+      try {
+        const pendingRiders = await riderescollection
+          .find({ status: "Pending" })
+          .toArray();
+        res.send(pendingRiders);
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to fetch pending riders" });
+      }
+    });
 
+    // Approve rider → status + role
+    app.patch("/rideres/approve/:id",verifytoken,verifyAdmin, async (req, res) => {
+      const { id } = req.params;
+      try {
+        const rider = await riderescollection.findOne({
+          _id: new ObjectId(id),
+        });
+        if (!rider)
+          return res
+            .status(404)
+            .send({ success: false, message: "Rider not found" });
 
+        const email = rider.email;
 
-// Approve rider: update status to "Active"
-app.patch("/rideres/approve/:id", async (req, res) => {
-  const { id } = req.params;
+        const result = await riderescollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status: "Active" } }
+        );
 
-  try {
-    const result = await riderescollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { status: "Active" } }
-    );
-     res.send(result)
-  } catch (error) {
-    console.error("Error approving rider:", error);
-    res.status(500).send({ success: false, message: "Failed to approve rider" });
-  }
-});
+        const userResult = await usersCollection.updateOne(
+          { email },
+          { $set: { role: "rider" } }
+        );
 
+        res.send({
+          success: true,
+          riderUpdated: result.modifiedCount,
+          roleUpdated: userResult.modifiedCount,
+        });
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to approve rider" });
+      }
+    });
 
-// Reject rider: delete from collection
-app.delete("/rideres/:id", async (req, res) => {
-  const { id } = req.params;
+    // Reject rider → delete
+    app.delete("/rideres/:id", async (req, res) => {
+      const { id } = req.params;
+      try {
+        const result = await riderescollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+        if (result.deletedCount > 0) {
+          res.send({ success: true, deletedCount: result.deletedCount });
+        } else {
+          res.status(404).send({ success: false, message: "Rider not found" });
+        }
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to reject rider" });
+      }
+    });
 
-  try {
-    const result = await riderescollection.deleteOne({ _id: new ObjectId(id) });
+    // Deactivate rider
+    app.patch("/rideres/deactivate/:id", async (req, res) => {
+      const { id } = req.params;
+      try {
+        const rider = await riderescollection.findOne({
+          _id: new ObjectId(id),
+        });
+        const email = rider.email;
 
-    if (result.deletedCount > 0) {
-      // Send success response
-      res.send({ success: true, deletedCount: result.deletedCount });
-    } else {
-      // Rider not found
-      res.status(404).send({ success: false, message: "Rider not found" });
-    }
-  } catch (error) {
-    console.error("Error rejecting rider:", error);
-    res.status(500).send({ success: false, message: "Failed to reject rider" });
-  }
-});
-// GET all active riders
-app.get("/rideres/active", async (req, res) => {
-  try {
-    const activeRiders = await riderescollection.find({ status: "Active" }).toArray();
-    res.send(activeRiders);
-  } catch (error) {
-    console.error("Error fetching active riders:", error);
-    res.status(500).send({ success: false, message: "Failed to fetch active riders" });
-  }
-});
+        const result = await riderescollection.updateOne(
+          { _id: new ObjectId(id) },
+          { $set: { status: "Inactive" } }
+        );
+        if (result.modifiedCount > 0) {
+          res.send({ success: true, modifiedCount: result.modifiedCount });
+        } else {
+          res
+            .status(404)
+            .send({
+              success: false,
+              message: "Rider not found or already inactive",
+            });
+        }
 
-// PATCH to deactivate a rider
-app.patch("/rideres/deactivate/:id", async (req, res) => {
-  const { id } = req.params;
+        const userResult = await usersCollection.updateOne(
+          { email },
+          { $set: { role: "user" } }
+        );
 
-  try {
-    const result = await riderescollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { status: "Inactive" } }
-    );
+        res.send({
+          success: true,
+          riderUpdated: result.modifiedCount,
+          roleUpdated: userResult.modifiedCount,
+        });
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to deactivate rider" });
+      }
+    });
 
-    if (result.modifiedCount > 0) {
-      res.send({ success: true, modifiedCount: result.modifiedCount });
-    } else {
-      res.status(404).send({ success: false, message: "Rider not found or already inactive" });
-    }
-  } catch (error) {
-    console.error("Error deactivating rider:", error);
-    res.status(500).send({ success: false, message: "Failed to deactivate rider" });
-  }
-});
-
-
-
-
+    // Get all active riders
+    app.get("/rideres/active",verifytoken,verifyAdmin, async (req, res) => {
+      try {
+        const activeRiders = await riderescollection
+          .find({ status: "Active" })
+          .toArray();
+        res.send(activeRiders);
+      } catch (err) {
+        console.error(err);
+        res
+          .status(500)
+          .send({ success: false, message: "Failed to fetch active riders" });
+      }
+    });
 
     //  Confirm MongoDB connection
     await client.db("admin").command({ ping: 1 });

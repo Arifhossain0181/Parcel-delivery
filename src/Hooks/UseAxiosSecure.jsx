@@ -1,20 +1,43 @@
 import axios from "axios";
 import UseAuthhooks from '../Hooks/UseAuthhooks'
+import { useNavigate } from "react-router-dom";
+
 const UseAxiosSecure = () => {
-  const {user} = UseAuthhooks()
+  const { user, signOutUser } = UseAuthhooks();
+  const navigate = useNavigate();
+
   const axiosSecure = axios.create({
-    baseURL: "http://localhost:3000", // must match backend port
+    baseURL: "http://localhost:3000",
   });
-  // Add a request interceptor
-axiosSecure.interceptors.request.use(function (config) {
-   config.headers.Authorization =`Bearer ${user.accessToken}`
-    return config;
-  }, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-  },
-  
-);
+
+  //  Add request interceptor
+  axiosSecure.interceptors.request.use(
+    async (config) => {
+      if (user) {
+        // Get latest ID token from Firebase
+        const token = await user.getIdToken();
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  //  Add response interceptor
+  axiosSecure.interceptors.response.use(
+    (res) => res,
+    (error) => {
+      const status = error.response?.status;
+      if (status === 403) {
+        navigate("/forbidden");
+      } else if (status === 401) {
+        signOutUser()
+          .then(() => navigate("/login"))
+          .catch(console.error);
+      }
+      return Promise.reject(error);
+    }
+  );
 
   return axiosSecure;
 };

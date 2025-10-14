@@ -4,8 +4,7 @@ import UseAuthhooks from "../../../Hooks/UseAuthhooks";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
-// Import Link and NavLink
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 
 const MyParcel = () => {
   const { user } = UseAuthhooks();
@@ -18,9 +17,7 @@ const MyParcel = () => {
     queryKey: ["parcels", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/Parcel?email=${user?.email}`,{
-       
-      });
+      const res = await axiosSecure.get(`/Parcel?email=${user?.email}`);
       return res.data;
     },
   });
@@ -66,11 +63,13 @@ const MyParcel = () => {
               <th className="px-2 py-1">Title</th>
               <th className="px-2 py-1">Receiver</th>
               <th className="px-2 py-1">Status</th>
+              <th className="px-2 py-1">Delivery Status</th> {/* 🆕 New column */}
               <th className="px-2 py-1">Cost</th>
-              <th className="px-2 py-1">trackingId</th>
+              <th className="px-2 py-1">Tracking ID</th>
               <th className="px-2 py-1">Action</th>
             </tr>
           </thead>
+
           <tbody>
             {parcels.map((parcel, index) => (
               <tr
@@ -80,6 +79,8 @@ const MyParcel = () => {
                 <td className="px-2 py-1">{index + 1}</td>
                 <td className="px-2 py-1">{parcel.title}</td>
                 <td className="px-2 py-1">{parcel.receiver_name}</td>
+
+                {/* Payment Status */}
                 <td className="px-2 py-1">
                   <span
                     className={`px-2 py-1 rounded-full text-xs sm:text-sm font-medium ${
@@ -93,12 +94,35 @@ const MyParcel = () => {
                     {parcel.paymentStatus === "paid" ? "Paid" : parcel.status}
                   </span>
                 </td>
+
+                {/* 🆕 Delivery Status */}
+                <td className="px-2 py-1">
+                  {parcel.paymentStatus === "paid" ? (
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs sm:text-sm font-medium ${
+                        parcel.deliveryStatus === "Collected"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {parcel.deliveryStatus === "Collected"
+                        ? "Collected"
+                        : "Not Collected"}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">Not Paid</span>
+                  )}
+                </td>
+
                 <td className="px-2 py-1">{parcel.cost}</td>
                 <td className="px-2 py-1">{parcel.trackingId}</td>
+
+                {/* Actions */}
                 <td className="px-2 py-1 flex flex-wrap gap-2">
                   <button className="btn btn-sm btn-info text-white">
                     View
                   </button>
+
                   {parcel.paymentStatus === "paid" && parcel.trackingId ? (
                     <Link
                       to={`/dashboard/Track`}
