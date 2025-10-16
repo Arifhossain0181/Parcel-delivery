@@ -4,80 +4,35 @@ import Swal from "sweetalert2";
 import UseAxiosSecure from "../../../Hooks/UseAxiosSecure";
 
 const bangladeshDistricts = [
-  "Bagerhat",
-  "Bandarban",
-  "Barguna",
-  "Barisal",
-  "Bhola",
-  "Bogra",
-  "Brahmanbaria",
-  "Chandpur",
-  "Chapai Nawabganj",
-  "Chattogram",
-  "Chuadanga",
-  "Comilla",
-  "Cox's Bazar",
-  "Dhaka",
-  "Dinajpur",
-  "Faridpur",
-  "Feni",
-  "Gaibandha",
-  "Gazipur",
-  "Gopalganj",
-  "Habiganj",
-  "Jamalpur",
-  "Jashore",
-  "Jhalokathi",
-  "Jhenaidah",
-  "Joypurhat",
-  "Khagrachhari",
-  "Khulna",
-  "Kishoreganj",
-  "Kurigram",
-  "Kushtia",
-  "Lakshmipur",
-  "Lalmonirhat",
-  "Madaripur",
-  "Magura",
-  "Manikganj",
-  "Meherpur",
-  "Munshiganj",
-  "Mymensingh",
-  "Naogaon",
-  "Narail",
-  "Narsingdi",
-  "Natore",
-  "Netrokona",
-  "Nilphamari",
-  "Noakhali",
-  "Pabna",
-  "Panchagarh",
-  "Patuakhali",
-  "Pirojpur",
-  "Rajbari",
-  "Rajshahi",
-  "Rangamati",
-  "Rangpur",
-  "Satkhira",
-  "Shariatpur",
-  "Sherpur",
-  "Sirajganj",
-  "Sunamganj",
-  "Sylhet",
-  "Tangail",
-  "Thakurgaon",
+  "Bagerhat","Bandarban","Barguna","Barisal","Bhola","Bogra",
+  "Brahmanbaria","Chandpur","Chapai Nawabganj","Chattogram","Chuadanga",
+  "Comilla","Cox's Bazar","Dhaka","Dinajpur","Faridpur","Feni","Gaibandha",
+  "Gazipur","Gopalganj","Habiganj","Jamalpur","Jashore","Jhalokathi",
+  "Jhenaidah","Joypurhat","Khagrachhari","Khulna","Kishoreganj","Kurigram",
+  "Kushtia","Lakshmipur","Lalmonirhat","Madaripur","Magura","Manikganj",
+  "Meherpur","Munshiganj","Mymensingh","Naogaon","Narail","Narsingdi",
+  "Natore","Netrokona","Nilphamari","Noakhali","Pabna","Panchagarh",
+  "Patuakhali","Pirojpur","Rajbari","Rajshahi","Rangamati","Rangpur",
+  "Satkhira","Shariatpur","Sherpur","Sirajganj","Sunamganj","Sylhet",
+  "Tangail","Thakurgaon"
+];
+
+//  New Bangladesh Divisions
+const bangladeshDivisions = [
+  "Dhaka", "Chattogram", "Khulna", "Rajshahi", 
+  "Barisal", "Sylhet", "Rangpur", "Mymensingh"
 ];
 
 const Rider = () => {
   const [searchDistrict, setSearchDistrict] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedDivision, setSelectedDivision] = useState(""); // new state for division
   const axiosSecure = UseAxiosSecure();
 
   const filteredDistricts = bangladeshDistricts.filter((d) =>
     d.toLowerCase().includes(searchDistrict.toLowerCase())
   );
 
-  // ✅ CHANGED — made async so we can await axios call properly
   const handleSubmitted = async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -87,8 +42,8 @@ const Rider = () => {
       email: form.email.value,
       nid: form.nid.value,
       age: form.age.value,
-      religion: form.religion.value,
-      house: form.house.value,
+      division: selectedDivision, // updated field
+      house: selectedDistrict,    // district still here
       contact: form.contact.value,
       weight: form.weight.value,
       address: selectedDistrict,
@@ -109,18 +64,14 @@ const Rider = () => {
           iconColor: "#4CAF50",
           timer: 2500,
           timerProgressBar: true,
-          showClass: {
-            popup: "animate__animated animate__fadeInDown",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp",
-          },
+          showClass: { popup: "animate__animated animate__fadeInDown" },
+          hideClass: { popup: "animate__animated animate__fadeOutUp" },
         });
 
-        //  CHANGED — moved reset *inside* success block
         form.reset();
         setSelectedDistrict("");
         setSearchDistrict("");
+        setSelectedDivision(""); // reset division
       }
     } catch (error) {
       console.error("Error submitting rider form:", error);
@@ -139,92 +90,55 @@ const Rider = () => {
         <div className="lg:w-1/2 p-10">
           <h1 className="text-4xl font-bold text-black mb-4">Be A Rider</h1>
           <p className="text-gray-700 mb-8">
-            Enjoy fast, reliable parcel delivery with real-time tracking and
-            zero hassle. From personal packages to business shipments — we
-            deliver on time, every time.
+            Enjoy fast, reliable parcel delivery with real-time tracking and zero hassle.
           </p>
 
-          <form
-            onSubmit={handleSubmitted}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[#cbeb67]"
-          >
+          <form onSubmit={handleSubmitted} className="grid grid-cols-1 md:grid-cols-2 gap-6 text-[#cbeb67]">
             {/* Name */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Your Name</label>
-              <input
-                name="name"
-                type="text"
-                placeholder="Full Name"
-                className="input input-bordered w-full"
-                required
-              />
+              <input name="name" type="text" placeholder="Full Name" className="input input-bordered w-full" required />
             </div>
 
             {/* Email */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Your Email</label>
-              <input
-                name="email"
-                type="email"
-                placeholder="Email"
-                className="input input-bordered w-full"
-                required
-              />
+              <input name="email" type="email" placeholder="Email" className="input input-bordered w-full" required />
             </div>
 
             {/* NID */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">NID No</label>
-              <input
-                name="nid"
-                type="text"
-                placeholder="NID No"
-                className="input input-bordered w-full"
-                required
-              />
+              <input name="nid" type="text" placeholder="NID No" className="input input-bordered w-full" required />
             </div>
 
             {/* Age */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Your Age</label>
-              <input
-                name="age"
-                type="number"
-                placeholder="Age"
-                className="input input-bordered w-full"
-                required
-              />
+              <input name="age" type="number" placeholder="Age" className="input input-bordered w-full" required />
             </div>
 
-            {/* Religion */}
+            {/* Division  updated  */}
             <div className="flex flex-col">
-              <label className="mb-1 font-medium">Religion</label>
+              <label className="mb-1 font-medium">Your Division</label>
               <select
                 className="select select-bordered w-full"
-                name="religion"
+                value={selectedDivision}
+                onChange={(e) => setSelectedDivision(e.target.value)}
                 required
               >
-                <option value="" disabled>
-                  Select Religion
-                </option>
-                <option>Islam</option>
-                <option>Hindu</option>
-                <option>Christian</option>
-                <option>Buddhism</option>
+                <option value="" disabled>Select Division</option>
+                {bangladeshDivisions.map((division) => (
+                  <option key={division} value={division}>{division}</option>
+                ))}
               </select>
             </div>
 
             {/* Warehouse */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Which Warehouse?</label>
-              <select
-                name="house"
-                className="select select-bordered w-full"
-                required
-              >
-                <option value="" disabled>
-                  Select Warehouse
-                </option>
+              <select name="house" className="select select-bordered w-full" required>
+                <option value="" disabled>Select Warehouse</option>
                 <option>Warehouse 1</option>
                 <option>Warehouse 2</option>
                 <option>Warehouse 3</option>
@@ -234,49 +148,23 @@ const Rider = () => {
             {/* Contact */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Contact Number</label>
-              <input
-                name="contact"
-                type="text"
-                placeholder="Contact"
-                className="input input-bordered w-full"
-                required
-              />
+              <input name="contact" type="text" placeholder="Contact" className="input input-bordered w-full" required />
             </div>
 
             {/* Weight */}
             <div className="flex flex-col">
               <label className="mb-1 font-medium">Full Weight Capacity</label>
-              <input
-                name="weight"
-                type="text"
-                placeholder="Weight in Kg"
-                className="input input-bordered w-full"
-              />
+              <input name="weight" type="text" placeholder="Weight in Kg" className="input input-bordered w-full" />
             </div>
 
             {/* District */}
             <div className="flex flex-col md:col-span-2">
               <label className="mb-1 font-medium">Your District</label>
-              <input
-                type="text"
-                placeholder="Search District"
-                value={searchDistrict}
-                onChange={(e) => setSearchDistrict(e.target.value)}
-                className="input input-bordered mb-2 w-full"
-              />
-              <select
-                className="select select-bordered w-full"
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                required
-              >
-                <option value="" disabled>
-                  Select District
-                </option>
+              <input type="text" placeholder="Search District" value={searchDistrict} onChange={(e) => setSearchDistrict(e.target.value)} className="input input-bordered mb-2 w-full" />
+              <select className="select select-bordered w-full" value={selectedDistrict} onChange={(e) => setSelectedDistrict(e.target.value)} required>
+                <option value="" disabled>Select District</option>
                 {filteredDistricts.map((district) => (
-                  <option key={district} value={district}>
-                    {district}
-                  </option>
+                  <option key={district} value={district}>{district}</option>
                 ))}
               </select>
             </div>
@@ -284,13 +172,7 @@ const Rider = () => {
             {/* License */}
             <div className="flex flex-col md:col-span-2">
               <label className="mb-1 font-medium">Driving License No</label>
-              <input
-                name="license"
-                type="text"
-                placeholder="License Number"
-                className="input input-bordered w-full"
-                required
-              />
+              <input name="license" type="text" placeholder="License Number" className="input input-bordered w-full" required />
             </div>
 
             {/* Submit */}

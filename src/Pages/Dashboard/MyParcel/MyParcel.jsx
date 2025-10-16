@@ -63,7 +63,8 @@ const MyParcel = () => {
               <th className="px-2 py-1">Title</th>
               <th className="px-2 py-1">Receiver</th>
               <th className="px-2 py-1">Status</th>
-              <th className="px-2 py-1">Delivery Status</th> {/* 🆕 New column */}
+              <th className="px-2 py-1">Delivery Status</th>{" "}
+              {/* 🆕 New column */}
               <th className="px-2 py-1">Cost</th>
               <th className="px-2 py-1">Tracking ID</th>
               <th className="px-2 py-1">Action</th>
@@ -80,7 +81,6 @@ const MyParcel = () => {
                 <td className="px-2 py-1">{parcel.title}</td>
                 <td className="px-2 py-1">{parcel.receiver_name}</td>
 
-                {/* Payment Status */}
                 <td className="px-2 py-1">
                   <span
                     className={`px-2 py-1 rounded-full text-xs sm:text-sm font-medium ${
@@ -95,7 +95,6 @@ const MyParcel = () => {
                   </span>
                 </td>
 
-                {/* 🆕 Delivery Status */}
                 <td className="px-2 py-1">
                   {parcel.paymentStatus === "paid" ? (
                     <span
@@ -117,7 +116,6 @@ const MyParcel = () => {
                 <td className="px-2 py-1">{parcel.cost}</td>
                 <td className="px-2 py-1">{parcel.trackingId}</td>
 
-                {/* Actions */}
                 <td className="px-2 py-1 flex flex-wrap gap-2">
                   <button className="btn btn-sm btn-info text-white">
                     View

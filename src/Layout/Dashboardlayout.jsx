@@ -9,6 +9,7 @@ import {
   FiCheckCircle,
   FiClock,
   FiPackage,
+  FiTruck,
 } from "react-icons/fi";
 import useUserRole from "../Hooks/useUseRole";
 
@@ -95,7 +96,19 @@ const Dashboardlayout = () => {
               <FiUser /> Update Profile
             </NavLink>
           </li>
-
+          {/* Rider Links */}
+          {role === "rider" && (
+            <>
+              <li>
+                <NavLink
+                  to="/dashboard/PendingDeliveries"
+                  className="flex items-center gap-2"
+                >
+                  <FiTruck /> Pending Deliveries
+                </NavLink>
+              </li>
+            </>
+          )}
           {/* Admin Links */}
           {role === "admin" && (
             <>

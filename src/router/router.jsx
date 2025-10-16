@@ -21,6 +21,12 @@ import MakeAdmin from '../Pages/Dashboard/MakeAdmin/Makeadmin'
 import Forbidden from "../Pages/Forbidden/Forbidden";
 import AdminRoutes from "../Routes/AdminRoutes";
 import AssignRiders from "../Pages/Dashboard/AssignRiders/AssignRiders";
+import PendingDelivaris from "../Pages/Dashboard/PendingsDelivarys/PendingDelivaris";
+import Ridersrouters from "../Routes/Ridersrouters";
+
+
+
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -63,6 +69,11 @@ export const router = createBrowserRouter([
      
     ],
   },
+  // riders 
+
+ 
+
+  // Dashboard routes 
   {
     path: '/dashboard',
     element: <Privateroutes><Dashboardlayout></Dashboardlayout></Privateroutes>,
@@ -83,6 +94,14 @@ export const router = createBrowserRouter([
         path:'Track',
         Component: TrackParcel
       },
+      // riders routes 
+      {
+        path:'PendingDeliveries',
+        element:<Ridersrouters><PendingDelivaris></PendingDelivaris></Ridersrouters>
+      },
+      // admin routes
+      // only admin can access these routes
+      // use AdminRoutes component to protect these routes
       {
         path:'assign',
         element:<AdminRoutes><AssignRiders></AssignRiders></AdminRoutes>,

@@ -1,6 +1,6 @@
 import React from "react";
-import useAuthhooks from "../../../../Hooks/UseAuthhooks";
-import UseAxiosSecure from "../../../../Hooks/UseAxiosSecure";
+import useAuthhooks from "../../../../Hooks/UseAuthhooks.jsx";
+import UseAxiosSecure from "../../../../Hooks/UseAxiosSecure.jsx";
 import { useQuery } from "@tanstack/react-query";
 
 const Paymenthistory = () => {
@@ -15,9 +15,10 @@ const Paymenthistory = () => {
       const res = await axiosSecure.get(`/payment-history?email=${user?.email}`);
       return res.data;
     },
+    onError: (err) => console.error("Failed to fetch payment history:", err),
   });
 
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  
 
   return (
     <div className="p-2 sm:p-6">
