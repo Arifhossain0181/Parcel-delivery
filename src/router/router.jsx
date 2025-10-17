@@ -23,7 +23,8 @@ import AdminRoutes from "../Routes/AdminRoutes";
 import AssignRiders from "../Pages/Dashboard/AssignRiders/AssignRiders";
 import PendingDelivaris from "../Pages/Dashboard/PendingsDelivarys/PendingDelivaris";
 import Ridersrouters from "../Routes/Ridersrouters";
-
+import ComPletedelivery from "../Pages/Dashboard/ComPLetedelivey/ComPletedelivery";
+import Myerarning from "../Pages/Dashboard/Myearning/Myerarning";
 
 
 
@@ -69,7 +70,7 @@ export const router = createBrowserRouter([
      
     ],
   },
-  // riders 
+
 
  
 
@@ -98,6 +99,14 @@ export const router = createBrowserRouter([
       {
         path:'PendingDeliveries',
         element:<Ridersrouters><PendingDelivaris></PendingDelivaris></Ridersrouters>
+      },
+      {
+        path:'completeddeliveries',
+        element:<Ridersrouters><ComPletedelivery></ComPletedelivery> </Ridersrouters>
+      },
+      {
+          path:'myearnings',
+          element:<Ridersrouters><Myerarning></Myerarning></Ridersrouters>
       },
       // admin routes
       // only admin can access these routes

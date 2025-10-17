@@ -107,6 +107,22 @@ const Dashboardlayout = () => {
                   <FiTruck /> Pending Deliveries
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/dashboard/completeddeliveries"
+                  className="flex items-center gap-2"
+                >
+                  <FiTruck /> Completed Deliveries
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/dashboard/myearnings"
+                  className="flex items-center gap-2"
+                >
+                  <FiTruck /> My Earnings
+                </NavLink>
+              </li>
             </>
           )}
           {/* Admin Links */}
